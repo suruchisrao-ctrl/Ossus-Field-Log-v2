@@ -326,78 +326,22 @@ svg.chart text{font-family:'IBM Plex Mono',monospace;}
 .kpi-delta{font-family:var(--mono);font-size:10px;margin-top:4px;}
 .kpi-delta.up{color:#2d7a4a;}
 .kpi-delta.dn{color:#8a2d2d;}
+
+/* Minimal patch: hide logging UI only */
+#ptab-log{
+  display:none !important;
+}
+
+#page-log{
+  display:none !important;
+}
+
 </style>
 </head>
 <body>
 
 <!-- TOPBAR -->
-<!-- ══ PIN LOGIN SCREEN ══ -->
-<div id="pin-screen" style="position:fixed;inset:0;z-index:2000;background:var(--sand-0);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:32px;max-width:360px;width:100%;padding:0 24px;">
 
-    <div style="text-align:center;">
-      <div style="font-family:var(--sans);font-size:28px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink);margin-bottom:6px;">OSSUS</div>
-      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-4);">Field Log System</div>
-    </div>
-
-    <div style="width:100%;">
-      <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;text-align:center;">Enter your PIN</div>
-
-      <!-- PIN display -->
-      <div style="display:flex;justify-content:center;gap:10px;margin-bottom:24px;" id="pin-dots">
-        <div class="pin-dot" id="pd-0"></div>
-        <div class="pin-dot" id="pd-1"></div>
-        <div class="pin-dot" id="pd-2"></div>
-        <div class="pin-dot" id="pd-3"></div>
-      </div>
-
-      <!-- Numpad -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-        <button class="pin-btn" onclick="pinPress(1)">1</button>
-        <button class="pin-btn" onclick="pinPress(2)">2</button>
-        <button class="pin-btn" onclick="pinPress(3)">3</button>
-        <button class="pin-btn" onclick="pinPress(4)">4</button>
-        <button class="pin-btn" onclick="pinPress(5)">5</button>
-        <button class="pin-btn" onclick="pinPress(6)">6</button>
-        <button class="pin-btn" onclick="pinPress(7)">7</button>
-        <button class="pin-btn" onclick="pinPress(8)">8</button>
-        <button class="pin-btn" onclick="pinPress(9)">9</button>
-        <button class="pin-btn pin-btn-ghost" onclick="pinClear()">Clear</button>
-        <button class="pin-btn" onclick="pinPress(0)">0</button>
-        <button class="pin-btn pin-btn-ghost" onclick="pinBackspace()">⌫</button>
-      </div>
-
-      <div id="pin-error" style="font-family:var(--mono);font-size:11px;color:var(--danger);text-align:center;margin-top:16px;display:none;">Incorrect PIN — try again</div>
-      <div id="pin-loading" style="font-family:var(--mono);font-size:11px;color:var(--ink-3);text-align:center;margin-top:16px;display:none;">Checking…</div>
-    </div>
-
-    <div style="font-family:var(--mono);font-size:9px;color:var(--ink-5);text-align:center;letter-spacing:0.06em;">
-      Contact your site manager if you don't have a PIN
-    </div>
-  </div>
-</div>
-
-<style>
-.pin-dot {
-  width: 14px; height: 14px; border-radius: 50%;
-  border: 2px solid var(--sand-3); background: transparent;
-  transition: background 0.15s, border-color 0.15s;
-}
-.pin-dot.filled { background: var(--ink); border-color: var(--ink); }
-.pin-dot.error  { background: var(--danger); border-color: var(--danger); animation: shake 0.3s ease; }
-@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
-
-.pin-btn {
-  font-family: var(--mono); font-size: 20px; font-weight: 300;
-  background: var(--sand-1); border: 1px solid var(--sand-3);
-  border-radius: 10px; padding: 18px; cursor: pointer;
-  color: var(--ink); transition: background 0.12s, transform 0.1s;
-  letter-spacing: 0.04em;
-}
-.pin-btn:hover { background: var(--sand-2); }
-.pin-btn:active { transform: scale(0.95); background: var(--sand-3); }
-.pin-btn-ghost { font-size: 13px; color: var(--ink-3); font-weight: 400; }
-</style>
 
 <header class="topbar">
   <div class="wordmark">
@@ -420,10 +364,10 @@ svg.chart text{font-family:'IBM Plex Mono',monospace;}
 
 <!-- PAGE TABS -->
 <nav class="page-tabs">
-  <div class="ptab active" id="ptab-log" onclick="switchPage('log')">
+  <div class="ptab active" id="ptab-log" onclick="switchPage('log')" style="display:none;">
     Log <span class="ptab-count" id="ptab-log-count">0</span>
   </div>
-  <div class="ptab" id="ptab-analytics" onclick="switchPage('analytics')">
+  <div class="ptab active" id="ptab-analytics" onclick="switchPage('analytics')">
     Analytics <span class="ptab-count">3</span>
   </div>
   <div class="ptab" id="ptab-import" onclick="switchPage('import')">
@@ -432,7 +376,7 @@ svg.chart text{font-family:'IBM Plex Mono',monospace;}
 </nav>
 
 <!-- ══ LOG PAGE ══ -->
-<div class="page active" id="page-log">
+<div class="page" id="page-log" style="display:none;">
   <div class="layout">
     <aside class="sidebar">
       <div class="sb-top">
@@ -566,7 +510,25 @@ svg.chart text{font-family:'IBM Plex Mono',monospace;}
 </div>
 
 <!-- ══ ANALYTICS PAGE ══ -->
-<div class="page" id="page-analytics">
+
+<div id="backend-update-banner" style="
+position:sticky;
+top:104px;
+z-index:180;
+background:rgba(28,23,18,0.92);
+color:#f5ede0;
+padding:10px 36px;
+font-family:'IBM Plex Mono', monospace;
+font-size:10px;
+letter-spacing:0.12em;
+text-transform:uppercase;
+border-bottom:1px solid rgba(245,237,224,0.08);
+backdrop-filter:blur(12px);
+">
+Backend Last Updated · Checking...
+</div>
+
+<div class="page active" id="page-analytics">
   <div class="analytics-page">
 
     <!-- Export toolbar -->
@@ -2643,24 +2605,11 @@ function exportCSV() {
 // ══ PIN LOGIN ══
 const PIN_STATE = { digits: [], operator: null };
 
-function pinPress(d) {
-  if (PIN_STATE.digits.length >= 4) return;
-  PIN_STATE.digits.push(d);
-  updatePinDots();
-  if (PIN_STATE.digits.length === 4) setTimeout(submitPIN, 120);
-}
 
-function pinBackspace() {
-  PIN_STATE.digits.pop();
-  updatePinDots();
-  document.getElementById('pin-error').style.display = 'none';
-}
 
-function pinClear() {
-  PIN_STATE.digits = [];
-  updatePinDots();
-  document.getElementById('pin-error').style.display = 'none';
-}
+
+
+
 
 function updatePinDots() {
   for (let i = 0; i < 4; i++) {
@@ -2728,6 +2677,95 @@ document.addEventListener('keydown', e => {
 });
 
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  try{
+    if(typeof switchPage === 'function'){
+      switchPage('analytics');
+    }
+  }catch(e){
+    console.log(e);
+  }
+});
+</script>
+
+
+<script>
+function updateBackendTimestampBanner() {
+  try {
+    const el = document.getElementById('backend-update-banner');
+    if (!el) return;
+
+    let latest = null;
+
+    // Try common global arrays
+    const candidateArrays = [
+      window.rows,
+      window.sheetRows,
+      window.rawRows,
+      window.importedRows,
+      window.dataRows,
+      window.analyticsRows
+    ];
+
+    for (const arr of candidateArrays) {
+      if (!Array.isArray(arr)) continue;
+
+      for (const row of arr) {
+        if (!row) continue;
+
+        for (const key in row) {
+          const val = row[key];
+
+          if (typeof val === 'string') {
+            const parsed = new Date(val);
+
+            if (!isNaN(parsed)) {
+              if (!latest || parsed > latest) {
+                latest = parsed;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // fallback to page modified time
+    if (!latest || isNaN(latest)) {
+      latest = new Date(document.lastModified);
+    }
+
+    const formatted = latest.toLocaleString();
+
+    el.innerHTML = 'Backend Last Updated · ' + formatted;
+
+  } catch(e) {
+    console.log('Timestamp banner error', e);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(updateBackendTimestampBanner, 1500);
+
+  // Refresh banner periodically
+  setInterval(updateBackendTimestampBanner, 30000);
+});
+
+// Hook into reload
+if (typeof reloadFromSheet === 'function') {
+  const originalReload = reloadFromSheet;
+
+  window.reloadFromSheet = async function(...args) {
+    const result = await originalReload.apply(this, args);
+
+    setTimeout(updateBackendTimestampBanner, 600);
+
+    return result;
+  };
+}
+</script>
+
 </body>
 </html>
 
